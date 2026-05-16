@@ -37,11 +37,12 @@ function Card({ result }) {
       */}
 
       {displayDetails && (
+        // ... || "" valeurs par défaut
         <div className="details">
           <p>
-            {result.adresse}
+            {result.adresse || "Adresse inconnue"}
             <br />
-            {result.code_postal} - {result.commune}
+            {result.code_postal || "—"} - {result.commune || "Commune inconnue"}
           </p>
         </div>
       )}

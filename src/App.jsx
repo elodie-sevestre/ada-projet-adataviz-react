@@ -23,26 +23,39 @@ function App() {
   const [query, setQuery] = useState(""); // recherche en cours
   const [offset, setOffset] = useState(0); // pt de départ pagination
   const [totalCount, setTotalCount] = useState(0); // total renvoyé par API
-
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   // valeur calculée à partir des états existants
   // recalculée automatiquement à chaque rendu
   const displayLoadMore = offset + initResultToShow < totalCount;
 
+  // fetchData() démarre
+  //   → loading = true  (on affiche "Chargement...")
+  //   → on attend la réponse de l'API
+  //   → si succès : loading = false, on stocke les données
+  //   → si échec  : loading = false, error = "message d'erreur"
   const fetchData = async (query, offset, append) => {
-    const data = await requestAPI(query, offset);
-    // append contrôle comment les nouvelles bornes sont intégrées
-    if (append) {
-      // false : remplace hotspots : chargt init, new search
-      // true : ajoute hotspots : btn load more
-      // ... opérateur spread permet de fusionner deux tableaux
-      // prev = bornes déjà affichées
-      // data.results = nouvelles bornes
-      // [...prev, ...data.results] // → les deux tableaux mis bout à bout
-      setHotspots((prev) => [...prev, ...data.results]); // ajoute
-    } else {
-      setHotspots(data.results); // remplace
+    setLoading(true);
+    try {
+      const data = await requestAPI(query, offset);
+      // append contrôle comment les nouvelles bornes sont intégrées
+      if (append) {
+        // false : remplace hotspots : chargt init, new search
+        // true : ajoute hotspots : btn load more
+        // ... opérateur spread permet de fusionner deux tableaux
+        // prev = bornes déjà affichées
+        // data.results = nouvelles bornes
+        // [...prev, ...data.results] // → les deux tableaux mis bout à bout
+        setHotspots((prev) => [...prev, ...data.results]); // ajoute
+      } else {
+        setHotspots(data.results); // remplace
+      }
+      setTotalCount(data.total_count);
+    } catch (error) {
+      setError("Une erreur est survenue."); // message lisible pour l'utilisateur
+    } finally {
+      setLoading(false); // s'exécute toujours, succès ou échec
     }
-    setTotalCount(data.total_count);
   };
 
   // useEffect : chargt init
@@ -84,6 +97,9 @@ function App() {
       </header>
 
       <main className="section" id="data">
+        {loading && <p>Chargement...</p>}
+        {error && <p>{error}</p>}
+
         <SearchBar onSearch={handleSearch} />
 
         {query && (
