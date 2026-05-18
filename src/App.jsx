@@ -1,4 +1,5 @@
 // ======================================= App.jsx =======================================
+//todo : à redécouper
 
 // Responsabilité : composant racine de l'application :
 // - centralise état global
@@ -20,15 +21,13 @@ import "./App.css"; // local, style
 // ---- COMPONENT -------------------------------------------------------------------------
 
 function App() {
-  // ces 4 états remplacent state.js
+  // états
   const [hotspots, setHotspots] = useState([]); // [bornes affichées]
   const [query, setQuery] = useState(""); // recherche en cours
   const [offset, setOffset] = useState(0); // pt de départ pagination
   const [totalCount, setTotalCount] = useState(0); // total renvoyé par API
-  // chargement
-  const [loading, setLoading] = useState(false);
-  // gestion erreur
-  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false); // chargement
+  const [error, setError] = useState(null); // gestion erreur
 
   // valeur calculée à partir des états existants
   // recalculée automatiquement à chaque rendu
