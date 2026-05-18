@@ -3,7 +3,7 @@
 // IMPORT
 
 import { useState, useEffect } from "react";
-import { requestAPI, initResultToShow } from "./api.js"; // fct fetch, const nb résultats/page
+import { requestAPI, initResultToShow } from "../api.js"; // fct fetch, const nb résultats/page
 
 function useHotspots() {
   const [hotspots, setHotspots] = useState([]); // [bornes affichées]
