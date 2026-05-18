@@ -13,6 +13,8 @@ import { requestAPI, initResultToShow } from "./api.js"; // fct fetch, const nd 
 import SearchBar from "./components/SearchBar.jsx"; // child component
 import Card from "./components/Card.jsx"; // child component
 import LoadMore from "./components/LoadMore.jsx"; // child component
+import Header from "./components/Header.jsx";
+import Footer from "./components/Footer.jsx";
 import "./App.css"; // local, style
 
 // ---- COMPONENT -------------------------------------------------------------------------
@@ -23,30 +25,31 @@ function App() {
   const [query, setQuery] = useState(""); // recherche en cours
   const [offset, setOffset] = useState(0); // pt de départ pagination
   const [totalCount, setTotalCount] = useState(0); // total renvoyé par API
+  // chargement
   const [loading, setLoading] = useState(false);
+  // gestion erreur
   const [error, setError] = useState(null);
+
   // valeur calculée à partir des états existants
   // recalculée automatiquement à chaque rendu
   const displayLoadMore = offset + initResultToShow < totalCount;
 
-  // fetchData() démarre
-  //   → loading = true  (on affiche "Chargement...")
-  //   → on attend la réponse de l'API
-  //   → si succès : loading = false, on stocke les données
-  //   → si échec  : loading = false, error = "message d'erreur"
+  /**
+   * récupère les données et gère les requêtes API
+   * @param {string} query recherche user
+   * @param {number} offset pagination
+   * @param {boolean} append affichage des nouvelles bornes
+   */
   const fetchData = async (query, offset, append) => {
     setLoading(true);
     try {
       const data = await requestAPI(query, offset);
-      // append contrôle comment les nouvelles bornes sont intégrées
       if (append) {
-        // false : remplace hotspots : chargt init, new search
-        // true : ajoute hotspots : btn load more
-        // ... opérateur spread permet de fusionner deux tableaux
+        setHotspots((prev) => [...prev, ...data.results]);
+        // opérateur spread permet de fusionner deux tableaux
         // prev = bornes déjà affichées
         // data.results = nouvelles bornes
         // [...prev, ...data.results] // → les deux tableaux mis bout à bout
-        setHotspots((prev) => [...prev, ...data.results]); // ajoute
       } else {
         setHotspots(data.results); // remplace
       }
@@ -62,7 +65,7 @@ function App() {
   // [] vide : s'exécute 1 seule fois
   // remplace loading(query, offset, true)
   //! fetchData n'est pas directement appelé dans la fonction car App se ré-exécute à chaque changement d'état.
-  //! Sans useEffect, le fetch se relancerait en boucle infinie.
+  //! Sans useEffect, le fetch se relancerait en boucle infinie
 
   useEffect(() => {
     fetchData(query, offset); // on l'appelle après l'avoir définie
@@ -89,12 +92,8 @@ function App() {
   // arbre JSX
 
   return (
-    // <>...</> : fragment React, remplace la <div> racine ss ajouter d'élémt ds le DOM
     <>
-      <header className="section" id="top">
-        <h1 id="app-title">Besoin de vous connecter gratuitement?</h1>
-        <h6>#radins4ever</h6>
-      </header>
+      <Header />
 
       <main className="section" id="data">
         {loading && <p>Chargement...</p>}
@@ -123,39 +122,10 @@ function App() {
         {/* <div id="map"></div> */}
       </main>
 
-      <footer className="section">
-        <a href="#top" className="btn" id="back-to-top">
-          ↑ Haut de page
-        </a>
-        <p>© 2026 Elodie Sevestre — Ada Tech School</p>
-        <a id="api-url" href="https://data.nantesmetropole.fr">
-          Données Nantes Métropole Open Data
-        </a>
-      </footer>
+      <Footer />
     </>
   );
 }
 
 // ---- EXPORT ----------------------------------------------------------------------------
 export default App;
-
-// ## Comparaison vanilla JS → React
-
-// | Vanilla JS | React |
-// | `state.js` — variables globales | `useState` dans `App` |
-// | `loader.js` — `loading()` | `fetchData()` dans `App` |
-// | `main.js` — `loading(query, offset, true)` | `useEffect(() => fetchData(), [])` |
-// | `search.js` — `search()` | `handleSearch()` dans `App` |
-// | `pagination.js` — `moreLoadButton` | `handleLoadMore()` dans `App` |
-// | `render.js` — `renderList()` | `hotspots.map(() => <Card />)` |
-
-// ## Les concepts clés à retenir
-
-// | Concept | Définition courte |
-// | **État global** | `useState` dans le composant racine, partagé via props |
-// | **Valeur calculée** | Dérivée d'états existants, pas besoin de `useState` |
-// | **useEffect** | Exécute du code au montage ou quand des dépendances changent |
-// | **Flux descendant** | `App` passe données et fonctions aux enfants via props |
-// | **Flux remontant** | Les enfants appellent les fonctions reçues en prop |
-// | **append** | Paramètre qui contrôle remplacement vs ajout dans la liste |
-// | **Opérateur spread** | `[...a, ...b]` fusionne deux tableaux |
