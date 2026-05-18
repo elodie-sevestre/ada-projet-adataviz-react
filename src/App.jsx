@@ -54,7 +54,7 @@ function App() {
         setHotspots(data.results); // remplace
       }
       setTotalCount(data.total_count);
-    } catch (error) {
+    } catch (err) {
       setError("Une erreur est survenue."); // message lisible pour l'utilisateur
     } finally {
       setLoading(false); // s'exécute toujours, succès ou échec
