@@ -1,7 +1,7 @@
 import useHotspots from "../hooks/useHotspots.js";
-import SearchBar from "./SearchBar.jsx"; // child component
-import Card from "./Card.jsx"; // child component
-import LoadMore from "./LoadMore.jsx"; // child component
+import SearchBar from "./SearchBar.jsx";
+import Card from "./Card.jsx";
+import LoadMore from "./LoadMore.jsx";
 import Map from "./Map.jsx";
 
 const Body = () => {
@@ -15,15 +15,18 @@ const Body = () => {
     handleSearch,
     handleLoadMore,
   } = useHotspots();
+
   return (
     <>
       <main className="section" id="data">
         {loading && <p>Chargement...</p>}
         {error && <p>{error}</p>}
         <SearchBar onSearch={handleSearch} />
-        {query && (
+        {totalCount > 0 && (
           <p className="search-results" id="counter">
-            "{totalCount} borne(s) trouvée(s)"
+            {query
+              ? `${totalCount} borne(s) trouvée(s) pour "${query}"`
+              : `${totalCount} borne(s) disponibles`}
           </p>
         )}
         <div className="cards" id="born-list">
@@ -31,13 +34,11 @@ const Body = () => {
             <Card key={hotspot.site} result={hotspot} />
           ))}
         </div>
-        {/* Dans le JSX, après les cards : */}
         <Map hotspots={hotspots} />
         <LoadMore
           onLoadMore={handleLoadMore}
           displayLoadMore={displayLoadMore}
         />
-        {/* <div id="map"></div> */}
       </main>
     </>
   );

@@ -1,7 +1,7 @@
 // ============================= api.js =============================
 
 // Responsabilité : construit URL et récupère données brutes
-// ommunication avec l'API Nantes Métropole
+// Communication avec l'API Nantes Métropole
 
 // ---- URL API -----------------------------------------------------------
 
@@ -20,20 +20,15 @@ export const initResultToShow = 8; // affichage initial
 export const requestAPI = async (query, offset) => {
   // URLSearchParams construit les paramètres proprement
   const URLparameters = new URLSearchParams();
-  URLparameters.set("limit", initResultToShow); // nombre de résultats par page au départ
-  URLparameters.set("offset", offset); // index résultat de départ
+  URLparameters.set("limit", initResultToShow);
+  URLparameters.set("offset", offset);
   if (query) {
-    URLparameters.set("where", `commune like '${query}'`);
+    URLparameters.set("where", `commune like '${encodeURIComponent(query)}'`);
   }
-  try {
-    const response = await fetch(`${url}?${URLparameters}`);
-    if (!response.ok) {
-      throw new Error(`Erreur HTTP : ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(`Erreur lors de la récupération des données : ${error}`);
-    return null;
+  const response = await fetch(`${url}?${URLparameters}`);
+  if (!response.ok) {
+    throw new Error(`Erreur HTTP : ${response.status}`);
   }
+  const data = await response.json();
+  return data;
 };
