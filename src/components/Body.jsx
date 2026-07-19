@@ -34,11 +34,11 @@ const Body = () => {
             <Card key={hotspot.site} result={hotspot} />
           ))}
         </div>
-        <Map hotspots={hotspots} />
         <LoadMore
           onLoadMore={handleLoadMore}
           displayLoadMore={displayLoadMore}
         />
+        <Map hotspots={hotspots} />
       </main>
     </>
   );
