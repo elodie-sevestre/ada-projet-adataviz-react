@@ -82,7 +82,7 @@ function Map({ hotspots }) {
 
     mapRef.current = new window.mapboxgl.Map({
       container: mapContainerRef.current,
-      style: "mapbox://styles/maelie/cmb7nnzmz00r901pact8o1xtf",
+      style: "mapbox://styles/mapbox/streets-v12",
       center: [-1.55, 47.216671],
       zoom: 12,
     });
@@ -145,6 +145,12 @@ function Map({ hotspots }) {
 
 export default Map;
 
+// Forcer invalidation HMR
+
+if (import.meta.hot) {
+  import.meta.hot.invalidate();
+}
+
 // ---- Notes d'intégration ---------------------------------------------------------------
 //
 // 1. Ajouter dans Body.jsx :
@@ -166,3 +172,12 @@ export default Map;
 // L'instance mapboxgl.Map et les marqueurs ne sont pas des données à afficher :
 // ce sont des effets de bord gérés par Mapbox lui-même.
 // Les stocker dans useState provoquerait des re-rendus inutiles et casserait la carte.
+
+// invalidation HMR :
+
+/*
+
+import.meta.hot est l'API que Vite injecte automatiquement en mode dev (elle vaut undefined en build de prod, d'où le if pour ne pas planter en production).
+invalidate() dit à Vite : "ce module ne peut pas être mis à jour à chaud proprement, force un rechargement complet de la page" — exactement ce qu'il te faut puisque ton instance Mapbox est créée une seule fois dans un useEffect(() => {}, []) et ne se réinitialise pas avec un simple hot-update.
+
+*/
