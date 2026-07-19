@@ -25,7 +25,7 @@ function useHotspots() {
       }
       setTotalCount(data.total_count);
     } catch (err) {
-      setError("Une erreur est survenue."); // message lisible pour l'utilisateur
+      setError(err, "Une erreur est survenue."); // message lisible pour l'utilisateur
     } finally {
       // s'exécute toujours, succès ou échec
       setLoading(false);
